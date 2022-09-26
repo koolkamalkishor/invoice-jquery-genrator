@@ -10,14 +10,39 @@
     -->
 
     <link
-      href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
       rel="stylesheet"
-      id="bootstrap-css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
     />
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
     <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      .mb-2 {
+        margin-bottom: 10px;
+      }
+
+      input[name='clientname'],
+      input[name='date'],
+      .address input[type='text'] {
+        border: 0;
+        background: #efefef;
+        padding: 10px;
+      }
+    </style>
 
     <script>
       $(document).ready(function () {
@@ -42,7 +67,7 @@
         $('#tab_logic tbody').on('keyup change', function () {
           calc();
         });
-        $('#tax').on('keyup change', function () {
+        $('#recivedAmt').on('keyup change', function () {
           calc_total();
         });
       });
@@ -99,184 +124,265 @@
 
         $('#remaining').val(rvdAmt.toFixed(2));
       }
+      $(document).ready(function () {
+        $('.sameas').on('click', function () {
+          if ($(this).is(':checked')) {
+            $('input[name=city\\[' + this.value + '\\]]').val(
+              $('input[name=city\\[1\\]]').val()
+            );
+            $('input[name=state\\[' + this.value + '\\]]').val(
+              $('input[name=state\\[1\\]]').val()
+            );
+            $('input[name=street\\[' + this.value + '\\]]').val(
+              $('input[name=street\\[1\\]]').val()
+            );
+          } else {
+            $('input[name=city\\[' + this.value + '\\]]').val('');
+            $('input[name=state\\[' + this.value + '\\]]').val('');
+            $('input[name=street\\[' + this.value + '\\]]').val('');
+          }
+        });
+      });
+
+      function onSubmit(form) {
+        var data = JSON.stringify($(form).serializeArray()); //  <-----------
+
+        console.log(data);
+        return false; //don't submit
+      }
     </script>
   </head>
   <body>
-    <main>
-      <div class="container">
-        <div class="row clearfix">
-          <div class="col-md-12">
-            <table class="table table-bordered table-hover" id="tab_logic">
-              <thead>
-                <tr>
-                  <th class="text-center">#</th>
-                  <th class="text-center">Product</th>
-                  <th class="text-center">Qty</th>
-                  <th class="text-center">Price</th>
-                  <th class="text-center">Tax %</th>
-                  <th class="text-center">Tax sum</th>
-                  <th class="text-center">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr id="addr0">
-                  <td>1</td>
-                  <td>
-                    <input
-                      type="text"
-                      name="product[]"
-                      placeholder="Enter Product Name"
-                      class="form-control"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      name="qty[]"
-                      placeholder="Enter Qty"
-                      class="form-control qty"
-                      step="0"
-                      min="0"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      name="price[]"
-                      placeholder="Enter Unit Price"
-                      class="form-control price"
-                      step="0.00"
-                      min="0"
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="number"
-                      name="tax[]"
-                      placeholder="Enter Tax"
-                      class="form-control taxrow"
-                      step="0.00"
-                      min="0"
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="number"
-                      name="taxsum[]"
-                      placeholder="sum"
-                      class="form-control taxsum"
-                      readonly
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="number"
-                      name="total[]"
-                      placeholder="0.00"
-                      class="form-control total"
-                      readonly
-                    />
-                  </td>
-                </tr>
-                <tr id="addr1"></tr>
-              </tbody>
-            </table>
+    <h1 class="text-center mb-3">Invoice App</h1>
+    <form onsubmit="return onSubmit(this)">
+      <main>
+        <div class="container">
+          <div class="row clearfix mb-3">
+            <div class="col-md-6">
+              <p>
+                <input
+                  type="text"
+                  name="clientname"
+                  value=""
+                  placeholder="Client Name"
+                />
+              </p>
+            </div>
+            <div class="col-md-6 text-right">
+              <p>Date: <input type="text" name="date" id="datepicker" /></p>
+            </div>
           </div>
-        </div>
-        <div class="row clearfix">
-          <div class="col-md-12">
-            <button id="add_row" class="btn btn-default pull-left">
-              Add Row
-            </button>
-            <button id="delete_row" class="pull-right btn btn-default">
-              Delete Row
-            </button>
+
+          <div class="row clearfix mb-4 address">
+            <div class="col-md-12">
+              <h2>Address</h2>
+            </div>
+
+            <div class="col-md-6">
+              <p>
+                Street Address:
+                <input type="text" name="street[1]" value="Laxmi Nagar" />
+              </p>
+              <p>
+                City: <input type="text" name="city[1]" value="San Antonio" />
+              </p>
+              <p>State: <input type="text" name="state[1]" value="TX" /></p>
+            </div>
+            <div class="col-md-6 text-right">
+              <p>
+                <input type="checkbox" name="sameas" value="2" class="sameas" />
+                Same as shipping Address
+              </p>
+              <p>
+                Street Address: <input type="text" name="street[2]" value="" />
+              </p>
+              <p>City: <input type="text" name="city[2]" value="" /></p>
+              <p>State: <input type="text" name="state[2]" value="" /></p>
+            </div>
           </div>
-        </div>
-        <div class="row clearfix" style="margin-top: 20px">
-          <div class="pull-right col-md-4">
-            <table
-              class="table table-bordered table-hover"
-              id="tab_logic_total"
-            >
-              <tbody>
-                <tr>
-                  <th class="text-center">Sub Total</th>
-                  <td class="text-center">
-                    <input
-                      type="number"
-                      name="sub_total"
-                      placeholder="0.00"
-                      class="form-control"
-                      id="sub_total"
-                      readonly
-                    />
-                  </td>
-                </tr>
 
-                <tr>
-                  <th class="text-center">Total Tax Amount</th>
-                  <td class="text-center">
-                    <input
-                      type="number"
-                      name="tax_amount"
-                      id="tax_amount"
-                      placeholder="0.00"
-                      class="form-control"
-                      readonly
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <th class="text-center">Amount</th>
-                  <td class="text-center">
-                    <input
-                      type="number"
-                      name="total_amount"
-                      id="total_amount"
-                      placeholder="0.00"
-                      class="form-control"
-                      readonly
-                    />
-                  </td>
-                </tr>
-
-                <tr>
-                  <th class="text-center">Recived Amount</th>
-                  <td class="text-center">
-                    <div class="input-group mb-2 mb-sm-0">
+          <div class="row clearfix">
+            <div class="col-md-12 text-right mb-2">
+              <button id="add_row" class="btn btn-default btn-success">
+                Add Row
+              </button>
+              <button id="delete_row" class="btn btn-default btn-danger">
+                Delete Row
+              </button>
+            </div>
+          </div>
+          <div class="row clearfix">
+            <div class="col-md-12">
+              <table class="table table-bordered table-hover" id="tab_logic">
+                <thead>
+                  <tr>
+                    <th class="text-center">#</th>
+                    <th class="text-center">Product</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-center">Price</th>
+                    <th class="text-center">Tax %</th>
+                    <th class="text-center">Tax sum</th>
+                    <th class="text-center">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr id="addr0">
+                    <td>1</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="product[]"
+                        placeholder="Enter Product Name"
+                        class="form-control"
+                      />
+                    </td>
+                    <td>
                       <input
                         type="number"
-                        class="form-control"
-                        id="recivedAmt"
-                        placeholder="0"
+                        name="qty[]"
+                        placeholder="Enter Qty"
+                        class="form-control qty"
+                        step="0"
+                        min="0"
                       />
-                      <!-- <div class="input-group-addon">%</div> -->
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        name="price[]"
+                        placeholder="Enter Unit Price"
+                        class="form-control price"
+                        step="0.00"
+                        min="0"
+                      />
+                    </td>
 
-                <tr>
-                  <th class="text-center">Remaining</th>
-                  <td class="text-center">
-                    <input
-                      type="number"
-                      name="remaining_amount"
-                      id="remaining"
-                      placeholder="0.00"
-                      class="form-control"
-                      readonly
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                    <td>
+                      <input
+                        type="number"
+                        name="tax[]"
+                        placeholder="Enter Tax"
+                        class="form-control taxrow"
+                        step="0.00"
+                        min="0"
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="number"
+                        name="taxsum[]"
+                        placeholder="sum"
+                        class="form-control taxsum"
+                        readonly
+                      />
+                    </td>
+
+                    <td>
+                      <input
+                        type="number"
+                        name="total[]"
+                        placeholder="0.00"
+                        class="form-control total"
+                        readonly
+                      />
+                    </td>
+                  </tr>
+                  <tr id="addr1"></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="row clearfix" style="margin-top: 20px">
+            <div class="col-md-8"></div>
+            <div class="col-md-4">
+              <table
+                class="table table-bordered table-hover"
+                id="tab_logic_total"
+              >
+                <tbody>
+                  <tr>
+                    <th class="text-center">Sub Total</th>
+                    <td class="text-center">
+                      <input
+                        type="number"
+                        name="sub_total"
+                        placeholder="0.00"
+                        class="form-control"
+                        id="sub_total"
+                        readonly
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <th class="text-center">Total Tax Amount</th>
+                    <td class="text-center">
+                      <input
+                        type="number"
+                        name="tax_amount"
+                        id="tax_amount"
+                        placeholder="0.00"
+                        class="form-control"
+                        readonly
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th class="text-center">Amount</th>
+                    <td class="text-center">
+                      <input
+                        type="number"
+                        name="total_amount"
+                        id="total_amount"
+                        placeholder="0.00"
+                        class="form-control"
+                        readonly
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <th class="text-center">Recived Amount</th>
+                    <td class="text-center">
+                      <div class="input-group mb-2 mb-sm-0">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="recivedAmt"
+                          placeholder="0"
+                        />
+                        <!-- <div class="input-group-addon">%</div> -->
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <th class="text-center">Remaining</th>
+                    <td class="text-center">
+                      <input
+                        type="number"
+                        name="remaining_amount"
+                        id="remaining"
+                        placeholder="0.00"
+                        class="form-control"
+                        readonly
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <button type="submit">Submit</button>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </form>
   </body>
 </html>
